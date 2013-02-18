@@ -242,7 +242,7 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 					//Make Sure Table has no Breaks
 					cleanUpTable();
 					
-					//Remove thread from
+					//Remove Thread from Threads Array
 				}
 			}
 		}
@@ -250,6 +250,7 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 	
 	public static void cleanUpTable() 
 	{
+		//Loop through every row in the table
 		for(int k = 0;k<=5;k++)
 		{
 			if(clientsTable.getModel().getValueAt(k, 0) == null)
@@ -258,10 +259,10 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 				{
 					if(clientsTable.getModel().getValueAt(k+1, 0) != null)
 					{
-						clientsTable.getModel().setValueAt(clientsTable.getModel().getValueAt(k, 0), k, 0);
-						clientsTable.getModel().setValueAt(clientsTable.getModel().getValueAt(k, 1), k, 1);
-						clientsTable.getModel().setValueAt(null, k, 0);
-						clientsTable.getModel().setValueAt(null, k, 1);
+						clientsTable.getModel().setValueAt(clientsTable.getModel().getValueAt(k+1, 0), k, 0);
+						clientsTable.getModel().setValueAt(clientsTable.getModel().getValueAt(k+1, 1), k, 1);
+						clientsTable.getModel().setValueAt(null, k+1, 0);
+						clientsTable.getModel().setValueAt(null, k+1, 1);
 					}
 				}
 			}
@@ -327,8 +328,12 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 	
 	public static void freeRescources(int qI, int sI)
 	{
+		//Set Occupied Resources to false
 		MainThread.usedQueues[qI] = false;
 		MainThread.usedStatusArea[sI] = false;
+		
+		//Clear Status Area
+		MainThread.statusFields[sI].setText(null);
 	}
 
 	@Override
