@@ -4,7 +4,8 @@ import java.sql.*;
 
 public class DatabaseHelper 
 {
-	static String dbURL = "jdbc:derby:c:/FRCScoutingData/scoutingData;create=true";
+	static String sDriverName = "org.sqlite.JDBC";
+	static String dbURL = "jdbc:sqlite:scoutingData.db";//;create=true";
 	static Connection conn = null;
 	
 	public DatabaseHelper()
@@ -22,7 +23,7 @@ public class DatabaseHelper
     {
         try
         {
-            Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+            Class.forName("org.sqlite.JDBC").newInstance();
             //Get a connection
             conn = DriverManager.getConnection(dbURL); 
         }
