@@ -2,10 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="C:/Users/austi_000/Desktop/bluecove-2.1.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="C:/Apache/db-derby-10.9.1.0-bin/lib/derby.jar"/>
-	<classpathentry kind="lib" path="C:/Apache/db-derby-10.9.1.0-bin/lib/derbyclient.jar"/>
-	<classpathentry kind="lib" path="C:/Apache/db-derby-10.9.1.0-bin/lib/derbynet.jar"/>
-	<classpathentry kind="lib" path="C:/Apache/db-derby-10.9.1.0-bin/lib/derbytools.jar"/>
+	<classpathentry kind="lib" path="F:/workspace/bluecove-2.1.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="F:/Apache/db-derby-10.9.1.0-bin/lib/derby.jar"/>
+	<classpathentry kind="lib" path="F:/Apache/db-derby-10.9.1.0-bin/lib/derbyclient.jar"/>
+	<classpathentry kind="lib" path="F:/Apache/db-derby-10.9.1.0-bin/lib/derbynet.jar"/>
+	<classpathentry kind="lib" path="F:/Apache/db-derby-10.9.1.0-bin/lib/derbytools.jar"/>
+	<classpathentry kind="lib" path="F:/workspace/sqlitejdbc-v056.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
