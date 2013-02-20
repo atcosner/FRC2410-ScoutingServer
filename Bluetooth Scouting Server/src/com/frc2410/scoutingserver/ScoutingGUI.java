@@ -5,16 +5,19 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class ScoutingGUI extends JFrame implements ActionListener
+public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 {
 	JTextArea[] statusFields = null;
 	JTextArea device1;
@@ -34,11 +37,11 @@ public class ScoutingGUI extends JFrame implements ActionListener
 	JLabel device6L;
 	JTextField mNumber;
 	JButton terminateScouting;
-	
-	public ScoutingGUI()
-	{
-		
-	}		
+	JLabel clientsNumL;
+	static JTextField clientsNum;
+	JLabel completedClientsL;
+	static JTextField completedClients;
+	static int numFinished = 0;	
 	
 	public ScoutingGUI(JPanel p1,int matchNum,JTextArea[] devices)
 	{
@@ -69,6 +72,10 @@ public class ScoutingGUI extends JFrame implements ActionListener
 		device6L = new JLabel("Device 6");
 		mNumber = new JTextField(20);
 		terminateScouting = new JButton("Terminate Scouting");
+		clientsNumL =  new JLabel("Clients Scouting");
+		clientsNum = new JTextField(20);
+		completedClientsL =  new JLabel("Clients That Have Completed Scouting");
+		completedClients = new JTextField(20);
 		
 		//Add Components to the Panel
 		p1.add(matchNumber);
@@ -87,9 +94,14 @@ public class ScoutingGUI extends JFrame implements ActionListener
 		p1.add(device5L);
 		p1.add(device6L);
 		p1.add(terminateScouting);
+		p1.add(clientsNumL);
+		p1.add(clientsNum);
+		p1.add(completedClientsL);
+		p1.add(completedClients);
 		
 		//Setup Insets and Positioning
 	    Insets insets = p1.getInsets();
+	    
 	    Dimension size = matchNumber.getPreferredSize();
 	    matchNumber.setBounds(10 + insets.left, 10 + insets.top, size.width, size.height);
 	    
@@ -99,6 +111,20 @@ public class ScoutingGUI extends JFrame implements ActionListener
 	    
 	    size = connectedClients.getPreferredSize();
 	    connectedClients.setBounds(10 + insets.left, 70 + insets.top, size.width, size.height);
+	    
+	    size = clientsNumL.getPreferredSize();
+	    clientsNumL.setBounds(150 + insets.left, 10 + insets.top, size.width, size.height);
+	    
+	    clientsNum.setBounds(150 + insets.left, 30 + insets.top, 100, size.height);
+	    clientsNum.setEnabled(false);
+	    clientsNum.setText(String.valueOf(MainGUI.numConnected));
+	    
+	    size = completedClientsL.getPreferredSize();
+	    completedClientsL.setBounds(290 + insets.left, 10 + insets.top, size.width, size.height);
+	    
+	    completedClients.setBounds(290 + insets.left, 30 + insets.top, 100, size.height);
+	    completedClients.setEnabled(false);
+	    completedClients.setText(String.valueOf(numFinished));
 	    
 	    size = device1L.getPreferredSize();
 	    device1L.setBounds(10 + insets.left, 90 + insets.top, size.width, size.height);
@@ -130,13 +156,17 @@ public class ScoutingGUI extends JFrame implements ActionListener
 	    device6.setBounds(450 + insets.left, 330 + insets.top, 200, 200);
 	    device6.setEnabled(false);
 	    
-	    terminateScouting.setBounds(10 + insets.left, 550 + insets.top, 650, 50);
+	    terminateScouting.setBounds(10 + insets.left, 550 + insets.top, 640, 50);
 	    
+	    //Add Action Listener
 	    terminateScouting.addActionListener(this);
+	    
+	    //Add Window Listener
+	    addWindowListener(this);
 	    
 		//Make GUI Visible and Set Size
 		add(p1);
-		setSize(750,700);
+		setSize(670,670);
 	}
 
 	@Override
@@ -159,5 +189,64 @@ public class ScoutingGUI extends JFrame implements ActionListener
 	private void closeWindow()
 	{
 		this.dispose();
+	}
+	
+	public static void updateScoutingClientsFields()
+	{
+		//Set Client Fields to Values
+		//Refresh if Changed
+	    clientsNum.setText(String.valueOf(MainGUI.numConnected));
+	    completedClients.setText(String.valueOf(numFinished));
+	    
+	    //Check to See if Scouting has been Completed
+	    if(MainGUI.numConnected==numFinished)
+	    {
+	    	//Scouting Has Been Completed by all available devices
+	    	//Display Message
+	    	JFrame f1 = new JFrame();
+	    	JOptionPane.showMessageDialog(f1,"Scouting has been completed by all Connected Devices! \nYou may now safely press the Terminate Scouting Button!");
+	    }
+	}
+
+	@Override
+	public void windowActivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent arg0) 
+	{
+		System.exit(0);
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

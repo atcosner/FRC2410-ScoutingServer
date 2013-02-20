@@ -20,7 +20,7 @@ public class MainThread implements ActionListener
 	static boolean[] usedStatusArea = new boolean[6];
 	static boolean[] usedConnectionThread = new boolean[6];
 	public static DatabaseHelper dbHelper;
-	
+
 	public static void main(String[] args) 
 	{
 		//Set Used Queues values to False

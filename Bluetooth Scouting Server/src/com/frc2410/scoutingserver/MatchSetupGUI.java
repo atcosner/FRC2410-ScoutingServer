@@ -20,16 +20,16 @@ public class MatchSetupGUI extends JFrame implements ActionListener
 {
 	JLabel directions;
 	JLabel matchN;
-	JTextField matchNumber;
+	static JTextField matchNumber;
 	JLabel teams;
 	JLabel redL;
-	JTextField red1;
-	JTextField red2;
-	JTextField red3;
+	static JTextField red1;
+	static JTextField red2;
+	static JTextField red3;
 	JLabel blueL;
-	JTextField blue1;
-	JTextField blue2;
-	JTextField blue3;
+	static JTextField blue1;
+	static JTextField blue2;
+	static JTextField blue3;
 	JLabel one;
 	JLabel two;
 	JLabel three;
@@ -41,7 +41,7 @@ public class MatchSetupGUI extends JFrame implements ActionListener
 	public MatchSetupGUI(JPanel p1)
 	{
 		//Call to Super Class
-		super("FRC 2410 Scouting Application");
+		super("FRC 2410 Bluetooth Server");
 		
 		//Set Background Color
 		p1.setBackground(Color.GRAY);
@@ -148,11 +148,22 @@ public class MatchSetupGUI extends JFrame implements ActionListener
 	    
 	    submit.addActionListener(this);
 	    
-		//Create GUI and Set Size
+		//Add Panel and Set Size
 		add(p1);
 		setSize(350,350);
 	}
 
+	public void addMatchData(int matchN,int redTeam1,int redTeam2,int redTeam3,int blueTeam1,int blueTeam2,int blueTeam3)
+	{
+		matchNumber.setText(String.valueOf(matchN));
+		red1.setText(String.valueOf(redTeam1));
+		red2.setText(String.valueOf(redTeam2));
+		red3.setText(String.valueOf(redTeam3));
+		blue1.setText(String.valueOf(blueTeam1));
+		blue2.setText(String.valueOf(blueTeam2));
+		blue3.setText(String.valueOf(blueTeam3));
+	}
+	
 	public void actionPerformed(ActionEvent e) 
 	{
 		int matchN  = 0;

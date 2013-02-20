@@ -112,15 +112,12 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 	    setupTeams.addActionListener(this);
 	    startScouting.addActionListener(this);
 	    
+	    //Add Window Listener
+	    addWindowListener(this);
 	    
 		//Make GUI Visible and Such
 		add(p1);
 		setSize(630,490);
-	}
-	
-	public static void addTeams(ArrayList<String> teams)
-	{
-		
 	}
 
 	public void actionPerformed(ActionEvent arg0) 
@@ -129,6 +126,10 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 		if(arg0.getActionCommand().equals("Setup Match"))
 		{
 			//Start Match Configure Screen
+			if(hasMatchData)
+			{
+				mG.addMatchData(matchNumberValue, redTeams[0], redTeams[1], redTeams[2], blueTeams[0], blueTeams[1], blueTeams[2]);
+			}
 			mG.setVisible(true);
 		}
 		else if(arg0.getActionCommand().equals("Begin Scouting"))
@@ -139,53 +140,46 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 			{
 			*/
 				//Validate Match Data
-				if(hasMatchData)
-				{
+				//if(hasMatchData)
+				//{
 					//Send Match Data to Clients
 					if(MainThread.queues[0] != null)
 					{
 						MainThread.queues[0].push(redTeams[0]);
-						System.out.println("Pushed");
 					}
 					if(MainThread.queues[1] != null)
 					{
 						MainThread.queues[1].push(redTeams[1]);
-						System.out.println("Pushed");
 					}
 					if(MainThread.queues[2] != null)
 					{
 						MainThread.queues[2].push(redTeams[2]);
-						System.out.println("Pushed");
 					}
 					if(MainThread.queues[3] != null)
 					{
 						MainThread.queues[3].push(blueTeams[0]);
-						System.out.println("Pushed");
 					}
 					if(MainThread.queues[4] != null)
 					{
 						MainThread.queues[4].push(blueTeams[1]);
-						System.out.println("Pushed");
 					}
 					if(MainThread.queues[5] != null)
 					{
 						MainThread.queues[5].push(blueTeams[2]);
-						System.out.println("Pushed");
 					}
 					
 					//Start GUI To Show Client Connection Status
-					JPanel p3 = new JPanel(null);
-					ScoutingGUI sG = new ScoutingGUI(p3,matchNumberValue,MainThread.statusFields);
+					ScoutingGUI sG = new ScoutingGUI(new JPanel(null),matchNumberValue,MainThread.statusFields);
 					sG.setVisible(true);
 					
 					//Close MainGUI
-					closeWindow();
-				}
-				else
-				{
-					JFrame frame = new JFrame();
-					JOptionPane.showMessageDialog(frame,"Please Add Match Data Before Initiating Scouting","Scouting Error",JOptionPane.ERROR_MESSAGE);
-				}
+					hideWindow();
+				//}
+				//else
+				//{
+					//JFrame frame = new JFrame();
+					//JOptionPane.showMessageDialog(frame,"Please Add Match Data Before Initiating Scouting","Scouting Error",JOptionPane.ERROR_MESSAGE);
+				//}
 			/*
 			}
 			else
@@ -195,16 +189,11 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 			}
 			*/
 		}
-		else if(arg0.getActionCommand().equals("Submit Data"))
-		{
-			System.out.println("Submit Button was Pressed");
-			mG.dispose();
-		}
 	}
 
-	public void closeWindow()
+	public void hideWindow()
 	{
-		dispose();
+		setVisible(false);
 	}
 	
 	public static void addConnectedClient(String btName, String btAddress)
@@ -241,8 +230,6 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 					
 					//Make Sure Table has no Breaks
 					cleanUpTable();
-					
-					//Remove Thread from Threads Array
 				}
 			}
 		}
@@ -255,12 +242,16 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 		{
 			if(clientsTable.getModel().getValueAt(k, 0) == null)
 			{
+				System.out.println("Found Null Value at: " + k);
 				if(k != 5)
 				{
 					if(clientsTable.getModel().getValueAt(k+1, 0) != null)
 					{
-						clientsTable.getModel().setValueAt(clientsTable.getModel().getValueAt(k+1, 0), k, 0);
-						clientsTable.getModel().setValueAt(clientsTable.getModel().getValueAt(k+1, 1), k, 1);
+						System.out.println("Found Occupied Row at: " + (k+1));
+						String btName = clientsTable.getModel().getValueAt(k+1, 0).toString();
+						String btAddress = clientsTable.getModel().getValueAt(k+1, 1).toString();
+						clientsTable.getModel().setValueAt(btName, k, 0);
+						clientsTable.getModel().setValueAt(btAddress, k, 1);
 						clientsTable.getModel().setValueAt(null, k+1, 0);
 						clientsTable.getModel().setValueAt(null, k+1, 1);
 					}
@@ -283,7 +274,6 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 			}
 		}
 		
-		System.out.println("Added? " + added);
 		if(added = false)
 		{
 			return 99;
@@ -345,7 +335,6 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 	@Override
 	public void windowClosed(WindowEvent arg0) 
 	{
-		System.exit(0);
 	}
 
 	@Override

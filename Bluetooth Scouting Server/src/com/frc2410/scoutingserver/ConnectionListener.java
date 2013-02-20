@@ -67,13 +67,8 @@ public class ConnectionListener implements Runnable
 						if(MainThread.usedQueues[k] == false && addedQ == false)
 						{
 							threadsQueue = MainThread.queues[k];
-							if(threadsQueue == null)
-							{
-								System.out.println(k + ": Null Queue");
-							}
 							MainThread.usedQueues[k] = true;
 							queueIndex = k;
-							System.out.println("Assigned Queue: " + k);
 							addedQ = true;
 						}
 					}
@@ -85,13 +80,8 @@ public class ConnectionListener implements Runnable
 						if(MainThread.usedStatusArea[k] == false && addedTA == false)
 						{
 							statusArea = MainThread.statusFields[k];
-							if(statusArea == null)
-							{
-								System.out.println(k + ": Null JTextArea");
-							}
 							MainThread.usedStatusArea[k] = true;
 							statusIndex = k;
-							System.out.println("Assigned Status Area: " + k);
 							addedTA = true;
 						}
 					}
@@ -101,31 +91,29 @@ public class ConnectionListener implements Runnable
 					{
 						if(!(statusArea == null))
 						{
-							System.out.println("No Nulls, Creating New Connection");
 							Thread conn = new Thread(new CommunicationThread(connection,threadsQueue,statusArea,queueIndex,statusIndex));
 							//Make Sure we don't have over 6 Connections
 							if(MainGUI.addConnectionThread(conn) != 99)
 							{
 								//<6 Connections
-								//Create thread Queue
-								System.out.println("Added Thread, Starting Connection");
+								//Start Communication Thread
 								conn.start();
 							}
 							else
 							{
 								//<6 Connections
-								//Cannot Do anything
+								//Cannot Do anything, Nullify Connection Thread
 								conn = null;
 							}
 						}
 						else
 						{
-							System.out.println("Null JTextArea, No Connection");
+							System.out.println("Null JTextArea, Cant Accept Connection");
 						}
 					}
 					else
 					{
-						System.out.println("Null Queue, No Connection");
+						System.out.println("Null Queue, Cant Accept Connection");
 					}
 				} 
 				catch (IOException e) 
@@ -136,13 +124,13 @@ public class ConnectionListener implements Runnable
 		}
 		else
 		{
-			//BlueTooth is not Available so Show Error
+			//BlueTooth is not Available, so Show Error
 			JPanel p = new JPanel(null);
 			SevereErrorGUI sEG = new SevereErrorGUI(p);
 			sEG.setVisible(true);
 			
 			//Hide MainGUI
-			m.closeWindow();
+			m.hideWindow();
 		}
 	}
 }

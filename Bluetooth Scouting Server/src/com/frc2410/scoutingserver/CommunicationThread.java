@@ -267,8 +267,9 @@ public class CommunicationThread implements Runnable
         		catch (IOException e) 
         		{
         			//Error
-        			//Most likely Client has sent Match Data and Closed Connection
-        			System.out.println("IO Error on Ping Method");
+        			clientConnected = false;
+        			MainGUI.removeConnectedClient(btN);
+        			MainGUI.freeRescources(queueIndex, statusIndex);
         			break;
         		}
 
@@ -326,7 +327,9 @@ public class CommunicationThread implements Runnable
         		{
         			//Error
         			//Client Has Disconnected
-        			e.printStackTrace();
+        			clientConnected = false;
+        			MainGUI.removeConnectedClient(btN);
+        			MainGUI.freeRescources(queueIndex, statusIndex);
         		}
 
         		//Print Scouting Data
@@ -359,6 +362,12 @@ public class CommunicationThread implements Runnable
 					//Error On Connection Close
 					e.printStackTrace();
 				}
+        		
+        		statusField.append("Scouting Complete\n");
+        		ScoutingGUI.numFinished++;
+        		
+        		//Update Scouting Fields
+        		ScoutingGUI.updateScoutingClientsFields();
         	}
         }
 	}

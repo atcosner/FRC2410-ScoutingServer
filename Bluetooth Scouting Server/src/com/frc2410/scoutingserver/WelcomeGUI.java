@@ -19,7 +19,7 @@ public class WelcomeGUI extends JFrame implements WindowListener
 	
 	public WelcomeGUI(JPanel p1)
 	{
-		//Call to Super Class
+		//Call to SuperClass
 		super("FRC 2410 Scouting Application");
 
 		//Set Background Color
@@ -74,6 +74,9 @@ public class WelcomeGUI extends JFrame implements WindowListener
 		//Add a Listener to the Start button
 		startButton.addActionListener(new MainThread());
 		
+		//Add Window Listener
+		addWindowListener(this);
+		
 		//Make GUI Visible and Such
 		add(p1);
 		setSize(630,300);
@@ -86,8 +89,7 @@ public class WelcomeGUI extends JFrame implements WindowListener
 	
     public void pullThePlug() 
     {
-        WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
-        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+    	setVisible(false);
     }
 
 	public boolean validData() 
