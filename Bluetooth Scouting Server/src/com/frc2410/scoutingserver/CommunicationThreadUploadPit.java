@@ -8,13 +8,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
 import javax.bluetooth.RemoteDevice;
 import javax.microedition.io.StreamConnection;
 import javax.swing.JTextArea;
 
-public class CommunicationThread implements Runnable
+public class CommunicationThreadUploadPit implements Runnable
 {
 	StreamConnection connection;
 	RemoteDevice device;
@@ -31,8 +29,9 @@ public class CommunicationThread implements Runnable
 	JTextArea statusField;
 	int queueIndex = 0;
 	int statusIndex = 0;
+	String uploadType;
 	
-	public CommunicationThread(StreamConnection con, LinkedList<Integer> threadsInfo2,JTextArea sF,int qI,int sI)
+	public CommunicationThreadUploadPit(StreamConnection con, LinkedList<Integer> threadsInfo2,JTextArea sF,int qI,int sI)
 	{
 		threadsInfo = threadsInfo2;
 		connection = con;
@@ -70,12 +69,12 @@ public class CommunicationThread implements Runnable
         {
 			e.printStackTrace();
 			clientConnected = false;
-			MainGUI.removeConnectedClient(btN);
-			MainGUI.freeRescources(queueIndex, statusIndex);
+			MainPitUploadGUI.removeConnectedClient(btN);
+			MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
 		}
         
         //Add Client to Main Table
-        MainGUI.addConnectedClient(btN, btA);
+        MainPitUploadGUI.addConnectedClient(btN, btA);
         
         try
         {
@@ -88,8 +87,8 @@ public class CommunicationThread implements Runnable
         {
         	e.printStackTrace();
         	clientConnected = false;
-        	MainGUI.removeConnectedClient(btN);
-        	MainGUI.freeRescources(queueIndex, statusIndex);
+        	MainPitUploadGUI.removeConnectedClient(btN);
+        	MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
         }
         
         try
@@ -99,14 +98,14 @@ public class CommunicationThread implements Runnable
 	        pWriter = new PrintWriter(new OutputStreamWriter(outStream));
 	        statusField.append("Created the Ouput Stream\n");
 	        sendData("hello");
-	        statusField.append("Send hello to Client\n");
+	        statusField.append("Sent hello to Client\n");
         }
         catch(IOException e)
         {
         	e.printStackTrace();
         	clientConnected = false;
-        	MainGUI.removeConnectedClient(btN);
-        	MainGUI.freeRescources(queueIndex, statusIndex);
+        	MainPitUploadGUI.removeConnectedClient(btN);
+        	MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
         	statusField.append("Client Disconnected\n");
         }
         
@@ -124,8 +123,8 @@ public class CommunicationThread implements Runnable
 			clientConnected = false;
 			
 			//Remove Client from List
-			MainGUI.removeConnectedClient(deviceName);
-			MainGUI.freeRescources(queueIndex, statusIndex);
+			MainPitUploadGUI.removeConnectedClient(deviceName);
+			MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
 			statusField.append("Client Disconnected\n");
 		}
         
@@ -154,8 +153,8 @@ public class CommunicationThread implements Runnable
                 	{
                 		//Client Disconnected
             			//Remove Client from List
-            			MainGUI.removeConnectedClient(deviceName);
-            			MainGUI.freeRescources(queueIndex, statusIndex);
+            			MainPitUploadGUI.removeConnectedClient(deviceName);
+            			MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
             			statusField.append("Client Disconnected\n");
                 		System.out.println("Connection Failed on Reading");
                 		clientConnected = false;
@@ -191,8 +190,8 @@ public class CommunicationThread implements Runnable
                 	{
                 		//Client Disconnected
             			//Remove Client from List
-            			MainGUI.removeConnectedClient(deviceName);
-            			MainGUI.freeRescources(queueIndex, statusIndex);
+            			MainPitUploadGUI.removeConnectedClient(deviceName);
+            			MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
             			statusField.append("Client Disconnected\n");
             			clientConnected = false;
                 	}
@@ -203,34 +202,19 @@ public class CommunicationThread implements Runnable
         		{
         			//Retrieve Queue Information
         			int teamNumber = threadsInfo.remove();
-        			int matchNumber = MainGUI.matchNumberValue;
-        			String teamColor = "";
-
-        			//Check for Alliance Color
-        			if(MainGUI.isTeamRed(teamNumber))
-        			{
-        				teamColor = "red";
-        			}
-        			else
-        			{
-        				teamColor = "blue";
-        			}
 
         			//Send Match Data to Client
-        			System.out.println("Sending Match Data");
-        			sendData("3");
-        			sendData(String.valueOf(matchNumber));
-        			sendData(String.valueOf(teamNumber));
-        			sendData(teamColor);
-        			statusField.append("Sending Match Data\n");
+        			System.out.println("Sending Transmit Code");
+        			sendData("transmit");
+        			statusField.append("Sending Transmit Code\n");
         		}
         	}
         	else if(clientMessage.equals("disconnect"))
         	{
         		//Remove Client From List
         		//Close Streams
-        		MainGUI.removeConnectedClient(btN);
-        		MainGUI.freeRescources(queueIndex, statusIndex);
+        		MainPitUploadGUI.removeConnectedClient(btN);
+        		MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
         		inStream = null;
         		outStream = null;
         		statusField.append("Client Disconnected\n");
@@ -241,132 +225,110 @@ public class CommunicationThread implements Runnable
         	//Client Has Disconnected
     		//Remove Client From List
     		//Close Streams
-    		MainGUI.removeConnectedClient(btN);
-    		MainGUI.freeRescources(queueIndex, statusIndex);
+    		MainPitUploadGUI.removeConnectedClient(btN);
+    		MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
     		inStream = null;
     		outStream = null;
     		statusField.append("Client Disconnected\n");
         }
-        
+
         if(clientConnected)
         {
-        	//Done Sending Match Data
-        	//Ping client Until that are ready to transmit match data
-        	String clientResponce = "";
-        	do
+        	//Ready to receive Uploaded Match
+        	System.out.println("Parsing Scouting Data");
+        	String uploadType = "";
+        	
+        	//Read Upload Type
+        	try 
         	{
-        		//Send Ping
-        		System.out.println("Sent Ping");
-        		sendData("1");
-
-        		//Wait for Response from Client
-        		try 
-        		{
-        			clientResponce = bReader.readLine();
-        		} 
-        		catch (IOException e) 
-        		{
-        			//Error
-        			clientConnected = false;
-        			MainGUI.removeConnectedClient(btN);
-        			MainGUI.freeRescources(queueIndex, statusIndex);
-        			break;
-        		}
-
-        		if(clientResponce != null)
-        		{
-        			//Analyze Client Responses
-        			System.out.println("Analyzing Client Responce");
-        			if(clientResponce.equals("2"))
-        			{
-        				System.out.println("Recieved Ping");
-        				//Correct Ping Response
-        				//Wait for 7 seconds before next Ping
-        				try 
-        				{
-        					synchronized (lock) 
-        					{
-        						System.out.println("Sleeping");
-        						lock.wait(3000);
-        					}
-        				} 
-        				catch (InterruptedException e) 
-        				{
-        					//Wait was Interupted
-        					e.printStackTrace();
-        				}
-        				System.out.println("Woken Up");
-        			}
-        		}
-        		else
-        		{
-        			//Client Has Disconnected
-        			//Remove Client From List
-        			//Close Streams
-        			MainGUI.removeConnectedClient(btN);
-        			MainGUI.freeRescources(queueIndex, statusIndex);
-        			inStream = null;
-        			outStream = null;
-        			statusField.append("Client Disconnected\n");
-        		}
-        	}
-        	while(!clientResponce.equals("3"));
-
-        	if(clientConnected)
+        		uploadType = bReader.readLine();
+        	} 
+        	catch (IOException e) 
         	{
-        		//Client Sent a 3
-        		//Ready to receive Scouting Data
-        		System.out.println("Recieved a 3 from the Client");
-        		System.out.println("Parsing Scouting Data");
-        		String scoutingData = "";
-        		try 
-        		{
-        			scoutingData = bReader.readLine();
-        		} 
-        		catch (IOException e) 
-        		{
-        			//Error
-        			//Client Has Disconnected
-        			clientConnected = false;
-        			MainGUI.removeConnectedClient(btN);
-        			MainGUI.freeRescources(queueIndex, statusIndex);
-        		}
-
-        		//Print Scouting Data
-        		System.out.println(scoutingData);
-        		
-        		//Send Acknowledgment to Server
-        		sendData("4");
-        		
-        		//Display Status in Text Area
-        		statusField.append("Recieved Scouting Data\n");
-        		statusField.append("Scotuing Complete\n");
-        		statusField.append("Inserting Data Into Database\n");
-        		
-        		//Create String[] from Match Scouting Data
-        		String[] splitScoutingData = scoutingData.split("-");
-        		
-        		//Insert Scouting Data into the Database
-        		DatabaseHelper.insertMatchData(splitScoutingData);
-        		statusField.append("Database Insert Complete\n");
-        		
-        		//Close Connection
-        		try 
-        		{
-					connection.close();
-				} 
-        		catch (IOException e) 
-        		{
-					//Error On Connection Close
-					e.printStackTrace();
-				}
-        		
-        		statusField.append("Scouting Complete\n");
-        		ScoutingGUI.numFinished++;
-        		
-        		//Update Scouting Fields
-        		ScoutingGUI.updateScoutingClientsFields();
+        		//Error
+        		//Client Has Disconnected
+        		clientConnected = false;
+        		MainPitUploadGUI.removeConnectedClient(btN);
+        		MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
         	}
+
+        	String uploadData = "";
+        	//Read Upload Data
+        	try 
+        	{
+        		uploadData = bReader.readLine();
+        	} 
+        	catch (IOException e) 
+        	{
+        		//Error
+        		//Client Has Disconnected
+        		clientConnected = false;
+        		MainPitUploadGUI.removeConnectedClient(btN);
+        		MainPitUploadGUI.freeRescources(queueIndex, statusIndex);
+        	}
+        	
+        	//Print Upload Data
+        	System.out.println(uploadType);
+        	System.out.println(uploadData);
+        	
+        	//Send Acknowledgment to Server
+        	sendData("4");
+
+        	//Display Status in Text Area
+        	statusField.append("Recieved Upload Data\n");
+        	statusField.append("Upload Complete\n");
+        	statusField.append("Inserting Data Into Database\n");
+
+        	//Create String[] from Match Scouting Data
+        	String[] splitUploadData = uploadData.split("-");
+
+        	//Check for type of Uploaded Data
+        	if(uploadType.equals("Match"))
+        	{
+        		//User Uploaded A Match
+            	//Insert Upload Data into the Database
+            	DatabaseHelper.insertMatchData(splitUploadData);
+            	statusField.append("Database Insert Complete\n");
+
+            	//Close Connection
+            	try 
+            	{
+            		connection.close();
+            	} 
+            	catch (IOException e) 
+            	{
+            		//Error On Connection Close
+            		e.printStackTrace();
+            	}
+        	}
+        	else if(uploadType.equals("Pit"))
+        	{
+        		//User Uploaded Pit Data
+            	//Insert Upload Data into the Database
+            	DatabaseHelper.insertPitData(splitUploadData);
+            	statusField.append("Database Insert Complete\n");
+
+            	//Close Connection
+            	try 
+            	{
+            		connection.close();
+            	} 
+            	catch (IOException e) 
+            	{
+            		//Error On Connection Close
+            		e.printStackTrace();
+            	}
+        	}
+        	else
+        	{
+        		//Unknown Upload Type
+        	}
+        	
+        	statusField.append("Upload Complete\n");
+        	ScoutingUploadGUI.numFinished++;
+
+        	//Update Scouting Fields
+        	ScoutingUploadGUI.updateScoutingClientsFields();
         }
 	}
 	
@@ -375,7 +337,7 @@ public class CommunicationThread implements Runnable
 		//Wire Data with NewLine Character
         pWriter.write(data + "\n");
         
-        //Flush to make sure Data was Sent
+        //Flush Buffer to make sure Data was Sent
         pWriter.flush();
 	}
 }

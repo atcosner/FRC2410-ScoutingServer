@@ -7,13 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -69,7 +63,6 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 	    blueTeamsTable.setEnabled(false);
 	    scrollPaneB = new JScrollPane(blueTeamsTable);
 	    startScouting = new JButton("Begin Scouting");
-	    startScouting.addActionListener(this);
 	    
 	    //Add Components to Panel
 	    p1.add(cC);
@@ -134,38 +127,42 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 		}
 		else if(arg0.getActionCommand().equals("Begin Scouting"))
 		{
-			/*
-			//Validate 6 Connected Clients
-			if(numConnected == 6)
+			//Validate at Least One Connected Client
+			if(numConnected <= 1)
 			{
-			*/
 				//Validate Match Data
-				//if(hasMatchData)
-				//{
+				if(hasMatchData)
+				{
 					//Send Match Data to Clients
 					if(MainThread.queues[0] != null)
 					{
 						MainThread.queues[0].push(redTeams[0]);
+						System.out.println(redTeams[0] + ": " + isTeamRed(redTeams[0]));
 					}
 					if(MainThread.queues[1] != null)
 					{
 						MainThread.queues[1].push(redTeams[1]);
+						System.out.println(redTeams[1] + ": " + isTeamRed(redTeams[1]));
 					}
 					if(MainThread.queues[2] != null)
 					{
 						MainThread.queues[2].push(redTeams[2]);
+						System.out.println(redTeams[2] + ": " + isTeamRed(redTeams[2]));
 					}
 					if(MainThread.queues[3] != null)
 					{
 						MainThread.queues[3].push(blueTeams[0]);
+						System.out.println(blueTeams[0] + ": " + isTeamRed(blueTeams[0]));
 					}
 					if(MainThread.queues[4] != null)
 					{
 						MainThread.queues[4].push(blueTeams[1]);
+						System.out.println(blueTeams[2] + ": " + isTeamRed(blueTeams[1]));
 					}
 					if(MainThread.queues[5] != null)
 					{
 						MainThread.queues[5].push(blueTeams[2]);
+						System.out.println(blueTeams[2] + ": " + isTeamRed(blueTeams[2]));
 					}
 					
 					//Start GUI To Show Client Connection Status
@@ -174,20 +171,22 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 					
 					//Close MainGUI
 					hideWindow();
-				//}
-				//else
-				//{
-					//JFrame frame = new JFrame();
-					//JOptionPane.showMessageDialog(frame,"Please Add Match Data Before Initiating Scouting","Scouting Error",JOptionPane.ERROR_MESSAGE);
-				//}
-			/*
+				}
+				else
+				{
+					JFrame frame = new JFrame();
+					JOptionPane.showMessageDialog(frame,"Please Add Match Data Before Initiating Scouting","Scouting Error",JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			else
 			{
 				JFrame frame = new JFrame();
-				JOptionPane.showMessageDialog(frame,"Please Have 6 Connected Clients Before You Initiate Scouting","Scouting Error",JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(frame,"Please Have at Least 1 Connected Client Before You Initiate Scouting","Scouting Error",JOptionPane.ERROR_MESSAGE);
 			}
-			*/
+		}
+		else
+		{
+			//Unknown Command
 		}
 	}
 
@@ -302,15 +301,11 @@ public class MainGUI extends JFrame implements ActionListener,WindowListener
 	
 	public static boolean isTeamRed(int team)
 	{
-		for(int k = 0;k<=2;k++)
+		for(int k = 0;k <= 2;k++)
 		{
 			if(redTeams[k] == team)
 			{
 				return true;
-			}
-			else
-			{
-				return false;
 			}
 		}
 		return false;

@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
+public class ScoutingUploadGUI extends JFrame implements ActionListener,WindowListener
 {
 	JTextArea[] statusFields = null;
 	JTextArea device1;
@@ -26,16 +26,13 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 	JTextArea device4;
 	JTextArea device5;
 	JTextArea device6;
-	JTextArea matchNumberField;
 	JLabel connectedClients;
-	JLabel matchNumber;
 	JLabel device1L;
 	JLabel device2L;
 	JLabel device3L;
 	JLabel device4L;
 	JLabel device5L;
 	JLabel device6L;
-	JTextField mNumber;
 	JButton terminateScouting;
 	JLabel clientsNumL;
 	static JTextField clientsNum;
@@ -43,13 +40,15 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 	static JTextField completedClients;
 	static int numFinished = 0;	
 	AlertGUI aG;
+	static int devicesUploading;
+	String uploadType;
 	
-	public ScoutingGUI()
+	public ScoutingUploadGUI()
 	{
 		
 	}
 	
-	public ScoutingGUI(JPanel p1,int matchNum,JTextArea[] devices)
+	public ScoutingUploadGUI(JPanel p1,JTextArea[] devices,int devicesU,String uT)
 	{
 		//Call to Super to Set Title
 		super("FRC 2410 Bluetooth Server");
@@ -59,6 +58,8 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 		
 		//Set Variables to Parameters
 		statusFields = devices;
+		devicesUploading = devicesU;
+		uploadType = uT;
 		
 		//Create Components
 		device1 = statusFields[0];
@@ -67,25 +68,20 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 		device4 = statusFields[3];
 		device5 = statusFields[4];
 		device6 = statusFields[5];
-		matchNumberField = new JTextArea();
 		connectedClients = new JLabel("Connected Clients");
-		matchNumber = new JLabel("Match Number");
 		device1L = new JLabel("Device 1");
 		device2L = new JLabel("Device 2");
 		device3L = new JLabel("Device 3");
 		device4L = new JLabel("Device 4");
 		device5L = new JLabel("Device 5");
 		device6L = new JLabel("Device 6");
-		mNumber = new JTextField(20);
 		terminateScouting = new JButton("Terminate Scouting");
-		clientsNumL =  new JLabel("Clients Scouting");
+		clientsNumL =  new JLabel("Clients Uploading");
 		clientsNum = new JTextField(20);
-		completedClientsL =  new JLabel("Clients That Have Completed Scouting");
+		completedClientsL =  new JLabel("Clients That Have Completed Upload");
 		completedClients = new JTextField(20);
 		
 		//Add Components to the Panel
-		p1.add(matchNumber);
-		p1.add(mNumber);
 		p1.add(connectedClients);
 		p1.add(device1);
 		p1.add(device2);
@@ -108,27 +104,20 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 		//Setup Insets and Positioning
 	    Insets insets = p1.getInsets();
 	    
-	    Dimension size = matchNumber.getPreferredSize();
-	    matchNumber.setBounds(10 + insets.left, 10 + insets.top, size.width, size.height);
-	    
-	    mNumber.setBounds(10 + insets.left, 30 + insets.top, 100, size.height);
-	    mNumber.setEnabled(false);
-	    mNumber.setText(String.valueOf(matchNum));
-	    
-	    size = connectedClients.getPreferredSize();
+	    Dimension size = connectedClients.getPreferredSize();
 	    connectedClients.setBounds(10 + insets.left, 70 + insets.top, size.width, size.height);
 	    
 	    size = clientsNumL.getPreferredSize();
-	    clientsNumL.setBounds(150 + insets.left, 10 + insets.top, size.width, size.height);
+	    clientsNumL.setBounds(10 + insets.left, 10 + insets.top, size.width, size.height);
 	    
-	    clientsNum.setBounds(150 + insets.left, 30 + insets.top, 100, size.height);
+	    clientsNum.setBounds(10 + insets.left, 30 + insets.top, 100, size.height);
 	    clientsNum.setEnabled(false);
-	    clientsNum.setText(String.valueOf(MainGUI.numConnected));
+	    clientsNum.setText(String.valueOf(devicesUploading));
 	    
 	    size = completedClientsL.getPreferredSize();
-	    completedClientsL.setBounds(290 + insets.left, 10 + insets.top, size.width, size.height);
+	    completedClientsL.setBounds(150 + insets.left, 10 + insets.top, size.width, size.height);
 	    
-	    completedClients.setBounds(290 + insets.left, 30 + insets.top, 100, size.height);
+	    completedClients.setBounds(150 + insets.left, 30 + insets.top, 100, size.height);
 	    completedClients.setEnabled(false);
 	    completedClients.setText(String.valueOf(numFinished));
 	    
@@ -182,26 +171,52 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 		{
 			//Terminate Scouting Button was Pressed
 			//Check if Good Quit or not
-		    if(MainGUI.numConnected == numFinished)
-		    {
-		    	//Nullify Communication Threads
-				for(int k = 0;k<=5;k++)
+			if(uploadType.equals("Pit"))
+			{
+				if(MainPitUploadGUI.numConnected == numFinished)
 				{
-					MainThread.connectionThreads[k] = null;
+					//Nullify Communication Threads
+					for(int k = 0;k<=5;k++)
+					{
+						MainThread.uploadConnectionThreads[k] = null;
+					}
+
+					//Close Window
+					closeWindow();
+
+					//Shut Down System
+					System.exit(0);
 				}
+				else
+				{
+					//Alert User To Problems Before Termination
+					aG = new AlertGUI(new JPanel(null));
+					aG.setVisible(true);
+				}
+			}
+			else
+			{
+				if(MainUploadGUI.numConnected == numFinished)
+				{
+					//Nullify Communication Threads
+					for(int k = 0;k<=5;k++)
+					{
+						MainThread.uploadConnectionThreads[k] = null;
+					}
 
-				//Close Window
-				closeWindow();
+					//Close Window
+					closeWindow();
 
-				//Shut Down System
-				System.exit(0);
-		    }
-		    else
-		    {
-		    	//Alert User To Problems Before Termination
-		    	aG = new AlertGUI(new JPanel(null));
-		    	aG.setVisible(true);
-		    }
+					//Shut Down System
+					System.exit(0);
+				}
+				else
+				{
+					//Alert User To Problems Before Termination
+					aG = new AlertGUI(new JPanel(null));
+					aG.setVisible(true);
+				}
+			}
 		}
 		else if(e.getActionCommand().equals("Yes"))
 		{
@@ -210,7 +225,7 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 			//Nullify Connection Threads
 			for(int k = 0;k<=5;k++)
 			{
-				MainThread.connectionThreads[k] = null;
+				MainThread.uploadConnectionThreads[k] = null;
 			}
 
 			//Close Window
@@ -230,16 +245,16 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 	{
 		//Set Client Fields to Values
 		//Refresh if Changed
-	    clientsNum.setText(String.valueOf(MainGUI.numConnected));
+	    clientsNum.setText(String.valueOf(devicesUploading));
 	    completedClients.setText(String.valueOf(numFinished));
 	    
 	    //Check to See if Scouting has been Completed
-	    if(MainGUI.numConnected==numFinished)
+	    if(devicesUploading==numFinished)
 	    {
 	    	//Scouting Has Been Completed by all available devices
 	    	//Display Message
 	    	JFrame f1 = new JFrame();
-	    	JOptionPane.showMessageDialog(f1,"Scouting has been completed by all Connected Devices! \nYou may now safely press the Terminate Scouting Button!");
+	    	JOptionPane.showMessageDialog(f1,"Upload has been completed by all Connected Devices! \nYou may now safely press the Terminate Scouting Button!");
 	    }
 	}
 
@@ -285,3 +300,4 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 		
 	}
 }
+

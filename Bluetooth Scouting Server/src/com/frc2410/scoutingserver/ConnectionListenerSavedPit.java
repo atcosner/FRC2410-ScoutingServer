@@ -9,11 +9,11 @@ import javax.microedition.io.StreamConnectionNotifier;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-public class ConnectionListener implements Runnable
+public class ConnectionListenerSavedPit implements Runnable
 {
-	MainGUI m;
+	MainPitUploadGUI m;
 	
-	public ConnectionListener(MainGUI mG)
+	public ConnectionListenerSavedPit(MainPitUploadGUI mG)
 	{
 		m = mG;
 	}
@@ -35,13 +35,7 @@ public class ConnectionListener implements Runnable
 		} 
 		catch (IOException e) 
 		{
-			//BlueTooth is not Available, so Show Error
-			JPanel p = new JPanel(null);
-			SevereErrorGUI sEG = new SevereErrorGUI(p);
-			sEG.setVisible(true);
-			
-			//Hide MainGUI
-			m.hideWindow();
+			//Error on Creating the Server
 		}
 
 		if(streamConnNotifier != null)
@@ -65,10 +59,10 @@ public class ConnectionListener implements Runnable
 					boolean addedQ = false;
 					for(int k = 0;k<=5;k++)
 					{
-						if(MainThread.usedQueues[k] == false && addedQ == false)
+						if(MainThread.usedUploadQueues[k] == false && addedQ == false)
 						{
-							threadsQueue = MainThread.queues[k];
-							MainThread.usedQueues[k] = true;
+							threadsQueue = MainThread.uploadQueues[k];
+							MainThread.usedUploadQueues[k] = true;
 							queueIndex = k;
 							addedQ = true;
 						}
@@ -78,23 +72,23 @@ public class ConnectionListener implements Runnable
 					boolean addedTA = false;
 					for(int k = 0;k<=5;k++)
 					{
-						if(MainThread.usedStatusArea[k] == false && addedTA == false)
+						if(MainThread.usedUploadStatusArea[k] == false && addedTA == false)
 						{
-							statusArea = MainThread.statusFields[k];
-							MainThread.usedStatusArea[k] = true;
+							statusArea = MainThread.uploadStatusFields[k];
+							MainThread.usedUploadStatusArea[k] = true;
 							statusIndex = k;
 							addedTA = true;
 						}
 					}
 					
 					//If Queue or JTextArea is Null, that we can't accept a connection
-					if(!(threadsQueue == null))
+					if(threadsQueue != null)
 					{
-						if(!(statusArea == null))
+						if(statusArea != null)
 						{
-							Thread conn = new Thread(new CommunicationThread(connection,threadsQueue,statusArea,queueIndex,statusIndex));
+							Thread conn = new Thread(new CommunicationThreadUploadPit(connection,threadsQueue,statusArea,queueIndex,statusIndex));
 							//Make Sure we don't have over 6 Connections
-							if(MainGUI.addConnectionThread(conn) != 99)
+							if(MainPitUploadGUI.addConnectionThread(conn) != 99)
 							{
 								//<6 Connections
 								//Start Communication Thread

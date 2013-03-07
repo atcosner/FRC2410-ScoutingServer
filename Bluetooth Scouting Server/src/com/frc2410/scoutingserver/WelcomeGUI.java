@@ -38,7 +38,11 @@ public class WelcomeGUI extends JFrame implements WindowListener
 		JLabel statsQuestionL = new JLabel("What Team are you on?");
 		statsQuestion = new JTextField(4);
 		
-		JButton startButton = new JButton("Start the Server");
+		JButton startMatchButton = new JButton("Start the Match Scouting Server");
+		
+		JButton startUploadServerButton = new JButton("Start the Saved Match Upload Server");
+		
+		JButton startUploadPitServerButton = new JButton("Start the Saved Pit Upload Server");
 		
 		//Add First Header Text
 		p1.add(header1);
@@ -50,10 +54,16 @@ public class WelcomeGUI extends JFrame implements WindowListener
 		p1.add(statsQuestionL);
 		p1.add(statsQuestion);
 		
-		//Add Button to Start Component
-		p1.add(startButton);
+		//Add Button to Start Match
+		p1.add(startMatchButton);
 		
-		//Create Absolute Positioning
+		//Add Button to Start Saved Upload
+		p1.add(startUploadServerButton);
+		
+		//Add Button to Start Saved Pit Upload
+		p1.add(startUploadPitServerButton);
+		
+		//Set Absolute Positioning
 		Insets insets = p1.getInsets();
 		Dimension size = header1.getPreferredSize();
 		header1.setBounds(100 + insets.left, 30 + insets.top,size.width, size.height);
@@ -67,19 +77,30 @@ public class WelcomeGUI extends JFrame implements WindowListener
 		size = statsQuestion.getPreferredSize();
 		statsQuestion.setBounds(280 + insets.left, 120 + insets.top,size.width, size.height);
 		
+		size = startMatchButton.getPreferredSize();
+		startMatchButton.setBounds(200 + insets.left, 150 + insets.top,size.width, size.height);
 		
-		size = startButton.getPreferredSize();
-		startButton.setBounds(245 + insets.left, 200 + insets.top,size.width, size.height);
+		size = startUploadServerButton.getPreferredSize();
+		startUploadServerButton.setBounds(190 + insets.left, 200 + insets.top,size.width, size.height);
 		
-		//Add a Listener to the Start button
-		startButton.addActionListener(new MainThread());
+		size = startUploadPitServerButton.getPreferredSize();
+		startUploadPitServerButton.setBounds(195 + insets.left, 250 + insets.top,size.width, size.height);
+		
+		//Add a Listener to the Start Match button
+		startMatchButton.addActionListener(new MainThread());
+		
+		//Add a Listener to Saved Match Upload Button
+		startUploadServerButton.addActionListener(new MainThread());
+		
+		//Add a Listener to the Saved Pit Upload Button
+		startUploadPitServerButton.addActionListener(new MainThread());
 		
 		//Add Window Listener
 		addWindowListener(this);
 		
 		//Make GUI Visible and Such
 		add(p1);
-		setSize(630,300);
+		setSize(630,350);
 	}
 	
 	public boolean getReadyStatus()

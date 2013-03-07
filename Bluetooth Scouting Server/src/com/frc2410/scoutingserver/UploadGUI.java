@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
+public class UploadGUI extends JFrame implements ActionListener,WindowListener
 {
 	JTextArea[] statusFields = null;
 	JTextArea device1;
@@ -26,17 +26,14 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 	JTextArea device4;
 	JTextArea device5;
 	JTextArea device6;
-	JTextArea matchNumberField;
 	JLabel connectedClients;
-	JLabel matchNumber;
 	JLabel device1L;
 	JLabel device2L;
 	JLabel device3L;
 	JLabel device4L;
 	JLabel device5L;
 	JLabel device6L;
-	JTextField mNumber;
-	JButton terminateScouting;
+	JButton terminateUpload;
 	JLabel clientsNumL;
 	static JTextField clientsNum;
 	JLabel completedClientsL;
@@ -44,12 +41,12 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 	static int numFinished = 0;	
 	AlertGUI aG;
 	
-	public ScoutingGUI()
+	public UploadGUI()
 	{
 		
 	}
 	
-	public ScoutingGUI(JPanel p1,int matchNum,JTextArea[] devices)
+	public UploadGUI(JPanel p1,int matchNum,JTextArea[] devices)
 	{
 		//Call to Super to Set Title
 		super("FRC 2410 Bluetooth Server");
@@ -67,25 +64,20 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 		device4 = statusFields[3];
 		device5 = statusFields[4];
 		device6 = statusFields[5];
-		matchNumberField = new JTextArea();
 		connectedClients = new JLabel("Connected Clients");
-		matchNumber = new JLabel("Match Number");
 		device1L = new JLabel("Device 1");
 		device2L = new JLabel("Device 2");
 		device3L = new JLabel("Device 3");
 		device4L = new JLabel("Device 4");
 		device5L = new JLabel("Device 5");
 		device6L = new JLabel("Device 6");
-		mNumber = new JTextField(20);
-		terminateScouting = new JButton("Terminate Scouting");
+		terminateUpload = new JButton("Terminate Match Upload");
 		clientsNumL =  new JLabel("Clients Scouting");
 		clientsNum = new JTextField(20);
 		completedClientsL =  new JLabel("Clients That Have Completed Scouting");
 		completedClients = new JTextField(20);
 		
 		//Add Components to the Panel
-		p1.add(matchNumber);
-		p1.add(mNumber);
 		p1.add(connectedClients);
 		p1.add(device1);
 		p1.add(device2);
@@ -99,7 +91,6 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 		p1.add(device4L);
 		p1.add(device5L);
 		p1.add(device6L);
-		p1.add(terminateScouting);
 		p1.add(clientsNumL);
 		p1.add(clientsNum);
 		p1.add(completedClientsL);
@@ -108,27 +99,20 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 		//Setup Insets and Positioning
 	    Insets insets = p1.getInsets();
 	    
-	    Dimension size = matchNumber.getPreferredSize();
-	    matchNumber.setBounds(10 + insets.left, 10 + insets.top, size.width, size.height);
-	    
-	    mNumber.setBounds(10 + insets.left, 30 + insets.top, 100, size.height);
-	    mNumber.setEnabled(false);
-	    mNumber.setText(String.valueOf(matchNum));
-	    
-	    size = connectedClients.getPreferredSize();
+	    Dimension size = connectedClients.getPreferredSize();
 	    connectedClients.setBounds(10 + insets.left, 70 + insets.top, size.width, size.height);
 	    
 	    size = clientsNumL.getPreferredSize();
-	    clientsNumL.setBounds(150 + insets.left, 10 + insets.top, size.width, size.height);
+	    clientsNumL.setBounds(10 + insets.left, 10 + insets.top, size.width, size.height);
 	    
-	    clientsNum.setBounds(150 + insets.left, 30 + insets.top, 100, size.height);
+	    clientsNum.setBounds(10 + insets.left, 30 + insets.top, 100, size.height);
 	    clientsNum.setEnabled(false);
-	    clientsNum.setText(String.valueOf(MainGUI.numConnected));
+	    clientsNum.setText(String.valueOf(MainUploadGUI.numConnected));
 	    
 	    size = completedClientsL.getPreferredSize();
-	    completedClientsL.setBounds(290 + insets.left, 10 + insets.top, size.width, size.height);
+	    completedClientsL.setBounds(150 + insets.left, 10 + insets.top, size.width, size.height);
 	    
-	    completedClients.setBounds(290 + insets.left, 30 + insets.top, 100, size.height);
+	    completedClients.setBounds(150 + insets.left, 30 + insets.top, 100, size.height);
 	    completedClients.setEnabled(false);
 	    completedClients.setText(String.valueOf(numFinished));
 	    
@@ -162,10 +146,10 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 	    device6.setBounds(450 + insets.left, 330 + insets.top, 200, 200);
 	    device6.setEnabled(false);
 	    
-	    terminateScouting.setBounds(10 + insets.left, 550 + insets.top, 640, 50);
+	    terminateUpload.setBounds(10 + insets.left, 550 + insets.top, 640, 50);
 	    
 	    //Add Action Listener
-	    terminateScouting.addActionListener(this);
+	    terminateUpload.addActionListener(this);
 	    
 	    //Add Window Listener
 	    addWindowListener(this);
@@ -178,16 +162,16 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
-		if(e.getActionCommand().equals("Terminate Scouting"))
+		if(e.getActionCommand().equals("Terminate Match Upload"))
 		{
 			//Terminate Scouting Button was Pressed
 			//Check if Good Quit or not
-		    if(MainGUI.numConnected == numFinished)
+		    if(MainUploadGUI.numConnected == numFinished)
 		    {
 		    	//Nullify Communication Threads
 				for(int k = 0;k<=5;k++)
 				{
-					MainThread.connectionThreads[k] = null;
+					MainThread.uploadConnectionThreads[k] = null;
 				}
 
 				//Close Window
@@ -230,16 +214,16 @@ public class ScoutingGUI extends JFrame implements ActionListener,WindowListener
 	{
 		//Set Client Fields to Values
 		//Refresh if Changed
-	    clientsNum.setText(String.valueOf(MainGUI.numConnected));
+	    clientsNum.setText(String.valueOf(MainUploadGUI.numConnected));
 	    completedClients.setText(String.valueOf(numFinished));
 	    
 	    //Check to See if Scouting has been Completed
-	    if(MainGUI.numConnected==numFinished)
+	    if(MainUploadGUI.numConnected==numFinished)
 	    {
 	    	//Scouting Has Been Completed by all available devices
 	    	//Display Message
 	    	JFrame f1 = new JFrame();
-	    	JOptionPane.showMessageDialog(f1,"Scouting has been completed by all Connected Devices! \nYou may now safely press the Terminate Scouting Button!");
+	    	JOptionPane.showMessageDialog(f1,"Match Upload has been completed by all Connected Devices! \nYou may now safely press the Terminate Match Upload Button!");
 	    }
 	}
 
